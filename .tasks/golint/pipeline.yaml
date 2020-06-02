@@ -13,6 +13,10 @@ spec:
         type: git
     tasks:
     - name: lint
+      resources:
+        inputs:
+          - name: repo
+            resource: repo
       taskSpec:
         resources:
           inputs:
