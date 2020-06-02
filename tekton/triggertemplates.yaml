@@ -43,5 +43,7 @@
                       TASKS=($(find .tasks -name "*.yaml"))
                       for TASK in $TASKS
                       do
-                        kubectl apply -f $TASK
+                        # TODO: Pull in taskSpecs rather than pipeline runs and wrap them in a pipeline run with Github events added around
+                        sed -E "s/^  name: (.+)/  name: \1-$(date +%s)/" $TASK | kubectl apply -f -
                       done
+                      # TODO: Clean up pipelineRuns
