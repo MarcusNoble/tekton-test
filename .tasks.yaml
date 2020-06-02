@@ -1,0 +1,4 @@
+tasks:
+- name: go-lint
+  taskRef:
+    name: go-lint

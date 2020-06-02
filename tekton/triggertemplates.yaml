@@ -44,22 +44,25 @@
                   args:
                     - -c
                     - |
-                      echo "apiVersion: tekton.dev/v1alpha1
-                      kind: PipelineResource
+                      echo "apiVersion: tekton.dev/v1beta1
+                      kind: PipelineRun
                       metadata:
-                        name: repo
+                        name: ci-run-$(date +%s)
                       spec:
-                        type: git
-                        params:
-                          - name: url
-                            value: ${giturl}
-                          - name: revision
-                            value: ${gitrevision}" | kubectl apply -f -
-                      cd repo
-                      TASKS=($(find .tasks -name "*.yaml"))
-                      for TASK in $TASKS
-                      do
-                        # TODO: Pull in taskSpecs rather than pipeline runs and wrap them in a pipeline run with Github events added around
-                        sed -E "s/^  name: (.+)/  name: \1-$(date +%s)/" $TASK | kubectl apply -f -
-                      done
+                        resources:
+                          inputs:
+                          - name: repo
+                            resourceSpec:
+                              type: git
+                              params:
+                                - name: revision
+                                  value: ${gitrevision}
+                                - name: url
+                                  value: ${giturl}
+                        pipelineSpec:
+                          resources:
+                            - name: repo
+                              type: git
+                      $(sed -E "s/^/    /" .tasks.yaml)"
+
                       # TODO: Clean up pipelineRuns

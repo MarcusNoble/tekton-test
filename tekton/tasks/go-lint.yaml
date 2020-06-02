@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: go-lint
+  annotations:
+    description: Performs a lint check against all Go code within the repo
+spec:
+  resources:
+    inputs:
+    - name: repo
+      type: git
+  params:
+  - name: setExitStatus
+    description: Fail task if lint issues are found
+    type: string
+    default: "true"
+  steps:
+  - name: lint
+    workingDir: "$(resources.inputs.repo.path)"
+    image: cytopia/golint:latest
+    args:
+    - -set_exit_status
+    - ./repo/...
+
