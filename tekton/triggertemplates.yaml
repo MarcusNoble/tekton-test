@@ -50,7 +50,6 @@
                         name: ci-run-$(date +%s)
                       spec:
                         resources:
-                          inputs:
                           - name: repo
                             resourceSpec:
                               type: git
@@ -63,6 +62,6 @@
                           resources:
                             - name: repo
                               type: git
-                      $(sed -E "s/^/    /" .tasks.yaml)"
+                      $(sed -E "s/^/    /" ./repo/.tasks.yaml)" | kubectl apply -f -
 
                       # TODO: Clean up pipelineRuns
