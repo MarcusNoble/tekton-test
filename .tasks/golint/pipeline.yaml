@@ -10,8 +10,6 @@ spec:
         steps:
         - name: lint
           image: cytopia/golint:latest
-          command:
-          - go-lint
           args:
           - -set_exit_status
           - ./repo/...
