@@ -1,0 +1,46 @@
+    apiVersion: triggers.tekton.dev/v1alpha1
+    kind: TriggerTemplate
+    metadata:
+      name: task-launcher
+      namespace: tekton-pipelines
+    spec:
+      params:
+        - name: gitrevision
+          description: The git revision
+        - name: gitrepositoryurl
+          description: The git repository url
+      resourcetemplates:
+        - apiVersion: tekton.dev/v1beta1
+          kind: TaskRun
+          metadata:
+            generateName: task-launcher-
+          spec:
+            serviceAccountName: tekton-pipelines-controller # TODO: Change this for something with slightly less permissions
+            resources:
+              inputs:
+              - name: repo
+                resourceSpec:
+                  type: git
+                  params:
+                    - name: revision
+                      value: $(params.gitrevision)
+                    - name: url
+                      value: $(params.gitrepositoryurl)
+            taskSpec:
+              resources:
+                inputs:
+                - name: repo
+                  type: git
+              steps:
+                - name: example
+                  image: bitnami/kubectl:latest
+                  command:
+                    - bash
+                  args:
+                    - -c
+                    - |
+                      TASKS=($(find .tasks -name "*.yaml"))
+                      for TASK in $TASKS
+                      do
+                        kubectl apply -f $TASK
+                      done

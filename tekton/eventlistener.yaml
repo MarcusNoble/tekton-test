@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eventlistener
+  namespace: tekton-pipelines
+
+---
+
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: eventlistener
+  namespace: tekton-pipelines
+rules:
+- apiGroups: ["triggers.tekton.dev"]
+  resources: ["eventlisteners", "triggerbindings", "triggertemplates"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["configmaps", "secrets", "serviceaccounts"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["tekton.dev"]
+  resources: ["pipelineruns", "pipelineresources", "taskruns"]
+  verbs: ["create"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eventlistener
+  namespace: tekton-pipelines
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: eventlistener
+subjects:
+- kind: ServiceAccount
+  name: eventlistener
+  namespace: tekton-pipelines
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: webhook-listener
+  namespace: tekton-pipelines
+spec:
+  serviceAccountName: eventlistener
+  triggers:
+  - name: pull-request
+    interceptors:
+    - cel:
+        filter: "header.match('X-GitHub-Event', 'pull_request') && body.action != 'closed'"
+        overlays:
+        - key: commit_sha
+          expression: "body.pull_request.head.sha"
+        - key: ref
+          expression: "body.pull_request.head.ref"
+    bindings:
+    - name: github-binding
+    template:
+      name: task-launcher
+  - name: push-branch
+    interceptors:
+    - cel:
+        filter: "header.match('X-GitHub-Event', 'push')"
+        overlays:
+        - key: commit_sha
+          expression: "body.after"
+        - key: ref
+          expression: "body.ref"
+    bindings:
+    - name: github-binding
+    template:
+      name: task-launcher
+  # - name: tag
+  #   interceptors:
+  #   - cel:
+  #       filter: "header.match('X-GitHub-Event', 'create') && body.ref_type == 'tag'"
+  #       overlays:
+  #       - key: commit_sha
+  #         expression: "body.sha"
+  #       - key: ref
+  #         expression: "body.ref"
+  #       - key: number
+  #         expression: "0"
+  #   bindings:
+  #   - name: github-binding
+  #   template:
+  #     name: project-tag

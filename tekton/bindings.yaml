@@ -1,0 +1,14 @@
+    apiVersion: triggers.tekton.dev/v1alpha1
+    kind: TriggerBinding
+    metadata:
+      name: github-binding
+      namespace: tekton-pipelines
+    spec:
+      params:
+      - name: gitrevision
+        value: $(body.commit_sha)
+      - name: gitref
+        value: $(body.ref)
+      - name: gitrepositoryurl
+        value: $(body.repository.html_url)
+
