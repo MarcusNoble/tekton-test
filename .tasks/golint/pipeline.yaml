@@ -9,9 +9,9 @@ spec:
       taskSpec:
         steps:
         - name: lint
-          image: pipelinecomponents/go-lint:latest
+          image: cytopia/golint:latest
           command:
           - go-lint
           args:
-          - -v
+          - -set_exit_status
           - ./repo/...
