@@ -4,6 +4,10 @@ metadata:
   name: go-lint
 spec:
   pipelineSpec:
+    resources:
+      inputs:
+      - name: repo
+        type: git
     tasks:
     - name: lint
       taskSpec:
