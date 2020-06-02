@@ -3,11 +3,14 @@ kind: PipelineRun
 metadata:
   name: go-lint
 spec:
+  resources:
+  - name: repo
+    resourceRef:
+      name: repo
   pipelineSpec:
     resources:
       - name: repo
-        resourceRef:
-          name: repo
+        type: git
     tasks:
     - name: lint
       taskSpec:
