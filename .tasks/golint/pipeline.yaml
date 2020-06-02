@@ -5,9 +5,9 @@ metadata:
 spec:
   pipelineSpec:
     resources:
-      inputs:
       - name: repo
-        type: git
+        resourceRef:
+          name: repo
     tasks:
     - name: lint
       taskSpec:
