@@ -34,11 +34,27 @@
               steps:
                 - name: example
                   image: bitnami/kubectl:latest
+                  env:
+                  - name: giturl
+                    value: $(params.gitrepositoryurl)
+                  - name: gitrevision
+                    value: $(params.gitrevision)
                   command:
                     - bash
                   args:
                     - -c
                     - |
+                      echo "apiVersion: tekton.dev/v1alpha1
+                      kind: PipelineResource
+                      metadata:
+                        name: repo
+                      spec:
+                        type: git
+                        params:
+                          - name: url
+                            value: ${giturl}
+                          - name: revision
+                            value: ${gitrevision}" | kubectl apply -f -
                       cd repo
                       TASKS=($(find .tasks -name "*.yaml"))
                       for TASK in $TASKS

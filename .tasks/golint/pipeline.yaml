@@ -7,6 +7,10 @@ spec:
     tasks:
     - name: lint
       taskSpec:
+        resources:
+          inputs:
+          - name: repo
+            type: git
         steps:
         - name: lint
           image: cytopia/golint:latest
