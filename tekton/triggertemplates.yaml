@@ -39,6 +39,7 @@
                   args:
                     - -c
                     - |
+                      cd repo
                       TASKS=($(find .tasks -name "*.yaml"))
                       for TASK in $TASKS
                       do

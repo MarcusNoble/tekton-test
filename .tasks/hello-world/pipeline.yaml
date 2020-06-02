@@ -1,11 +1,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: test-pipeline
+  generareName: hello-world-
 spec:
   pipelineSpec:
     tasks:
-    - name: example-task
+    - name: say-hello
       taskSpec:
         steps:
         - name: test
