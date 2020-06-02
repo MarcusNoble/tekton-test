@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: go-lint
+spec:
+  pipelineSpec:
+    tasks:
+    - name: lint
+      taskSpec:
+        steps:
+        - name: lint
+          image: pipelinecomponents/go-lint:latest
+          command:
+          - go-lint
+          args:
+          - -v
+          - ./repo/...
