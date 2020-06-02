@@ -3,6 +3,8 @@
     metadata:
       name: task-launcher
       namespace: tekton-pipelines
+      annotations:
+        janitor/ttl: 7d
     spec:
       params:
         - name: gitrevision
@@ -47,7 +49,9 @@
                       echo "apiVersion: tekton.dev/v1beta1
                       kind: PipelineRun
                       metadata:
-                        name: ci-run-$(date +%s)
+                        name: ci-run-$(uid)
+                        annotations:
+                          janitor/ttl: 7d
                       spec:
                         resources:
                           - name: repo
@@ -62,6 +66,4 @@
                           resources:
                             - name: repo
                               type: git
-                      $(sed -E "s/^/    /" ./repo/.tasks.yaml)" | kubectl apply -f -
-
-                      # TODO: Clean up pipelineRuns
+                      $(sed -E $'s/^(- name: (.+))/\\1\\\n  taskRef:\\\n    name: \\2\\\n  resources:\\\n    inputs:\\\n    - name: repo\\\n      resource: repo/g' .tasks.yaml | sed -E "s/^/    /g")" | kubectl apply -f -

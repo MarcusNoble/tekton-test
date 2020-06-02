@@ -1,8 +1,2 @@
 tasks:
 - name: go-lint
-  taskRef:
-    name: go-lint
-  resources:
-    inputs:
-    - name: repo
-      resource: repo

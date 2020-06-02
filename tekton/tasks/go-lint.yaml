@@ -20,5 +20,5 @@ spec:
     image: cytopia/golint:latest
     args:
     - -set_exit_status
-    - ./repo/...
+    - ./...
 
