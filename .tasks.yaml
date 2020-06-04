@@ -1,2 +1,3 @@
 tasks:
 - name: go-lint
+- name: go-fmt

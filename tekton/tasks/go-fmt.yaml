@@ -1,9 +1,9 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: go-lint
+  name: go-fmt
   annotations:
-    description: Performs a lint check against all Go code within the repo
+    description: Performs a format check against all Go code within the repo
 spec:
   resources:
     inputs:
@@ -11,7 +11,7 @@ spec:
       type: git
   params:
   - name: setExitStatus
-    description: Fail task if lint issues are found
+    description: Fail task if format issues are found
     type: string
     default: "true"
   steps:
@@ -21,12 +21,16 @@ spec:
     - -c
     - |
       echo "Starting task!"
-  - name: lint
+  - name: fmt
     workingDir: "$(resources.inputs.repo.path)"
-    image: cytopia/golint:latest
-    args:
-    - -set_exit_status
-    - ./...
+    image: golang:1.13
+    script: |
+      if [ "$(params.setExitStatus)" == "true" ]
+      then
+        exit `gofmt -l . | wc -l | xargs`
+      else
+        gofmt -l .
+      fi
   - name: close-status
     image: bash:latest
     script: |
