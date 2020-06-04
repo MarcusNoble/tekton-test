@@ -15,20 +15,9 @@ spec:
     type: string
     default: "true"
   steps:
-  - name: pending-status
-    image: bash:latest
-    args:
-    - -c
-    - |
-      echo "Starting task!"
   - name: lint
     workingDir: "$(resources.inputs.repo.path)"
     image: cytopia/golint:latest
     args:
     - -set_exit_status
     - ./...
-  - name: close-status
-    image: bash:latest
-    script: |
-      #!/usr/bin/env bash
-      echo "Task passed!"
