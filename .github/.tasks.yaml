@@ -1,0 +1,6 @@
+tasks:
+- name: go-lint
+- name: go-fmt
+  params:
+  - name: setExitStatus
+    value: "true"
